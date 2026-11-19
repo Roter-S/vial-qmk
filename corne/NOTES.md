@@ -10,6 +10,7 @@
 - **Firmware v2 flasheado en las dos mitades** (2026-11-18, ~19:05; `picotool -v` OK). IDs de flash: derecha `0xC4607015C7670E23`, izquierda `0xC469ACA11F576835`.
 - `corne-aerospace.vil` cargado en las dos mitades; USB en la izquierda.
 - **Prueba de suspensión superada** (19:14–19:16, 4 ciclos de dormir y despertar, sin bucle).
+- **Prueba de inactividad superada** (19:48–22:24, 2 h 36 min con la pantalla apagada, sin reposo del sistema porque `caffeinate`/`coreaudiod` lo impedían). Las dos mitades seguían funcionando. Con el firmware de fábrica, este mismo caso (dejarlo un rato sin tocar) hacía caer la mitad sin USB.
 - Pendiente:
   - Probar una suspensión de 1 h o más y el uso diario.
   - El reinicio por watchdog todavía no se ha probado con una caída real de la conexión.
