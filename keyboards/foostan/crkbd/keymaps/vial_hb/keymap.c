@@ -136,16 +136,52 @@ void keyboard_post_init_user(void) {
     transaction_register_rpc(USER_HEARTBEAT, hb_slave_handler);
 }
 
+static void hb_master_ping(void) {
+    static uint32_t last_tx = 0;
+    static uint8_t  seq     = 0;
+    if (timer_elapsed32(last_tx) > 500) {
+        last_tx = timer_read32();
+        seq++;
+        /* No-op while the halves are disconnected: QMK skips RPCs then. */
+        transaction_rpc_send(USER_HEARTBEAT, sizeof(seq), &seq);
+    }
+}
+
+/*
+ * v2: while the host sleeps, the master spins in the USB suspend loop and
+ * housekeeping_task_user never runs. Without pings there, the slave rebooted
+ * 5 s into every Mac sleep. That loop still runs the matrix scan (and with it
+ * the split link), so keep pinging from it too.
+ */
+void suspend_power_down_user(void) {
+    if (is_keyboard_master()) {
+        hb_master_ping();
+    }
+}
+
+/*
+ * v2: full chip reset. QMK's default mcu_reset() on RP2040 is NVIC_SystemReset(),
+ * which only resets the cores: PIO, DMA and the rest of the peripherals keep
+ * running, and a slave rebooted that way never regained the split link (it
+ * looped on SPLIT_WATCHDOG every ~2.1 s). The watchdog trigger resets
+ * everything except the oscillators, like pico-sdk's watchdog_reboot(). This
+ * also covers SPLIT_WATCHDOG, which calls mcu_reset() as well.
+ */
+#include "hardware/structs/psm.h"
+#include "hardware/structs/watchdog.h"
+
+void mcu_reset(void) {
+    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
+    watchdog_hw->scratch[4] = 0; /* no magic: the bootrom does a normal flash boot */
+    hw_set_bits(&psm_hw->wdsel, PSM_WDSEL_BITS & ~(PSM_WDSEL_ROSC_BITS | PSM_WDSEL_XOSC_BITS));
+    hw_set_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_TRIGGER_BITS);
+    while (true) {
+    }
+}
+
 void housekeeping_task_user(void) {
     if (is_keyboard_master()) {
-        static uint32_t last_tx = 0;
-        static uint8_t  seq     = 0;
-        if (timer_elapsed32(last_tx) > 500) {
-            last_tx = timer_read32();
-            seq++;
-            /* No-op while the halves are disconnected: QMK skips RPCs then. */
-            transaction_rpc_send(USER_HEARTBEAT, sizeof(seq), &seq);
-        }
+        hb_master_ping();
     } else if (hb_linked) {
         uint32_t last = hb_last_rx; /* read before "now" so the difference can't go negative */
         uint32_t now  = timer_read32();
