@@ -113,6 +113,7 @@
 - No es el código del v2: `mcu_reset` solo lo llaman el heartbeat y `SPLIT_WATCHDOG`, y los dos solo actúan en la mitad sin USB.
 - Hipótesis: caída de voltaje o reinicio de la mitad con USB (cable USB, puerto o un corto momentáneo en el TRRS). Que la derecha quede sin LEDs encaja con eso.
 - **La izquierda falla en los dos papeles**: con USB en la izquierda se cae del bus; en una prueba anterior con USB en la derecha, la que dejó de funcionar a los minutos fue la izquierda. Con el firmware de fábrica también pasaba. Sospecha principal: **defecto de hardware en la mitad izquierda** (MCU, regulador, cristal o soldaduras).
+- 12:30:50, 12:31:00 y 12:32:47: **mismo patrón en otro puerto de la Mac** (`drd2-port-hs@01100000`, otro controlador, desde las 10:07). El puerto de la Mac queda descartado.
 - Mitigación: USB en la **derecha**. Si la izquierda se cuelga como esclava, el heartbeat del v2 la reinicia sola y la derecha sigue funcionando.
 
 ## Mejoras posibles
