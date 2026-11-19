@@ -15,7 +15,7 @@
   - El reinicio por watchdog todavía no se ha probado con una caída real de la conexión.
 
 ## Repo
-- Fork `Roter-S/vial-qmk`, rama `corne`, clonado en `~/Web/vial-qmk`. El remote `upstream` apunta a `vial-kb/vial-qmk`.
+- Fork `Roter-S/vial-qmk`, rama `corne` (rama por defecto del fork), clonado en `~/Web/vial-qmk`. El remote `upstream` apunta a `vial-kb/vial-qmk`.
 - Clon superficial (`--depth 1`). Para traer actualizaciones de Vial, primero `git fetch --unshallow upstream`.
 - Historial de la rama: fuentes de foostan tal cual → keymap v1 (heartbeat) → arreglo v2. Con `git log -p keyboards/foostan` se ve cada cambio.
 
@@ -24,7 +24,8 @@
 - `keyboards/foostan/crkbd/keymaps/vial_hb/`: keymap con heartbeat (`config.h`, `keymap.c`, `rules.mk`, `vial.json`). El v1 está en el commit `98d3a400` y el v2 en `7715fd6f`.
 - `corne/layouts/corne-aerospace.vil`: layout actual. Cargarlo con *File → Load saved layout*.
 - `corne/layouts/corne-original-backup.vil`: layout original de fábrica.
-- `corne/firmware/` (**solo local, ignorado por git** con `*.uf2`; también sigue en `~/.config/corne/corne-firmware/`):
+- `~/.config/corne` es un enlace simbólico a esta carpeta `corne/`. No hay otra copia.
+- `corne/firmware/` (**solo local, ignorado por git** con `*.uf2`):
   - `corne-vial-heartbeat-v2.uf2`: **v2, el que está flasheado.**
   - `corne-vial-heartbeat.uf2`: v1, con el bug del bucle al dormir la Mac. No usar.
   - `corne-vial-official-foostan-2026-11-14.uf2`: firmware oficial más reciente, sin cambios (alternativa).
