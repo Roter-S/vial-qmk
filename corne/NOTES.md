@@ -106,6 +106,13 @@
 - Hipótesis (sin confirmar): contacto intermitente del TRRS (cable o jacks). La mitad sin USB recibe la corriente por el TRRS, y quedarse totalmente apagada no cuadra con un reinicio por el heartbeat. Las teclas repetidas encajan con transacciones split que fallan: el maestro tarda en mandar el "soltar" y macOS repite la tecla.
 - Siguiente paso: un cable TRRS nuevo (4 polos). Si no, el contador de caídas para tener datos.
 
+### Log de macOS del 2026-11-19 (clave)
+- Se lee con `/usr/bin/log show ... --predicate 'process == "kernel" AND eventMessage CONTAINS "drd1"'`. Ojo: en zsh `log` es un builtin, hay que usar `/usr/bin/log`.
+- La **mitad con USB (izquierda) deja de responder en el bus USB**: `transaction error` en sus endpoints, macOS la resetea (`terminateDevice: reset API call`) y la vuelve a enumerar, a veces mal (`enumeration failed`; queda como `IOUSBHostDevice` sin nombre ni HID).
+- Pasó a las 09:03:57, 09:09:46–09:10:32 (muchos ciclos: el lag y las teclas repetidas) y 10:00:12 (quedó colgada sin configurar).
+- No es el código del v2: `mcu_reset` solo lo llaman el heartbeat y `SPLIT_WATCHDOG`, y los dos solo actúan en la mitad sin USB.
+- Hipótesis: caída de voltaje o reinicio de la mitad con USB (cable USB, puerto o un corto momentáneo en el TRRS). Que la derecha quede sin LEDs encaja con eso.
+
 ## Mejoras posibles
 1. **Contador de caídas.** La mitad con USB cuenta cada vez que pierde la conexión con la otra, y una tecla en la capa 3 escribe `caidas: N`. Sirve para saber si el heartbeat actuó o si simplemente no hubo falla.
 2. **Watchdog de hardware del RP2040**, solo si el contador muestra caídas. Cubre un chip colgado y los casos en que se cae todo el teclado. Ojo: QMK se queda en el bucle de suspensión mientras la Mac duerme, así que hay que alimentar el watchdog también ahí para que no reinicie el teclado.
