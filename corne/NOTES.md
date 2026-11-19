@@ -99,6 +99,13 @@
 - Si alguna vez vuelve el bucle con el v2, el problema estaría en la comunicación de la mitad con USB. El siguiente paso sería que esa mitad se reinicie sola si pierde la conexión por varios segundos después de haberla tenido.
 - Los LEDs que se encienden y el "pop" en los audífonos con la Mac dormida son despertares breves (DarkWake por Wi-Fi/Bluetooth): es comportamiento normal de macOS. Se pueden reducir desactivando "Activar para acceso a la red".
 
+### Incidente con el v2 (2026-11-19, ~09:00–09:15): sin suspensión
+- La Mac arrancó a las 08:56. Pocos minutos después la mitad derecha (sin USB) se quedó **sin LEDs** y dejó de funcionar. Reconectar el USB (izquierda) la recuperó.
+- Un rato después fallaron las dos: lag, letras o espacios repetidos y borrado de más. Se recuperó solo, sin desconectar nada.
+- Teclado conectado directo a la Mac, sin hub. No hubo reposo del sistema.
+- Hipótesis (sin confirmar): contacto intermitente del TRRS (cable o jacks). La mitad sin USB recibe la corriente por el TRRS, y quedarse totalmente apagada no cuadra con un reinicio por el heartbeat. Las teclas repetidas encajan con transacciones split que fallan: el maestro tarda en mandar el "soltar" y macOS repite la tecla.
+- Siguiente paso: un cable TRRS nuevo (4 polos). Si no, el contador de caídas para tener datos.
+
 ## Mejoras posibles
 1. **Contador de caídas.** La mitad con USB cuenta cada vez que pierde la conexión con la otra, y una tecla en la capa 3 escribe `caidas: N`. Sirve para saber si el heartbeat actuó o si simplemente no hubo falla.
 2. **Watchdog de hardware del RP2040**, solo si el contador muestra caídas. Cubre un chip colgado y los casos en que se cae todo el teclado. Ojo: QMK se queda en el bucle de suspensión mientras la Mac duerme, así que hay que alimentar el watchdog también ahí para que no reinicie el teclado.
