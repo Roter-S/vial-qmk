@@ -115,6 +115,7 @@
 - **La izquierda falla en los dos papeles**: con USB en la izquierda se cae del bus; en una prueba anterior con USB en la derecha, la que dejó de funcionar a los minutos fue la izquierda. Con el firmware de fábrica también pasaba. Sospecha principal: **defecto de hardware en la mitad izquierda** (MCU, regulador, cristal o soldaduras).
 - 12:30:50, 12:31:00 y 12:32:47: **mismo patrón en otro puerto de la Mac** (`drd2-port-hs@01100000`, otro controlador, desde las 10:07). El puerto de la Mac queda descartado.
 - Desde que el USB va en la **derecha** (2026-11-19, tarde) no se han notado fallas. Encaja con la izquierda defectuosa. No está confirmado si el heartbeat la ha reiniciado: desde la Mac no se ve.
+- **18:58:11: también falló con el USB en la derecha.** Mismo patrón en el log (`transaction error`, unos 8 ciclos de reconexión) y quedó trabada. Los LEDs seguían animándose: el chip estaba vivo y lo que se cayó fue el USB. Ya no es solo "la izquierda viene mal". Quedan dos hipótesis: ruido o corto de la izquierda a través del TRRS, o un problema de firmware (con el de fábrica también fallaba). Prueba pendiente: la derecha sola por USB, sin TRRS, durante unas horas.
 - **Garantía en trámite** (2026-11-19). Antes de enviar el teclado: restaurar el firmware de fábrica en cada mitad con su `backup-*.uf2`.
 - Mitigación: USB en la **derecha**. Si la izquierda se cuelga como esclava, el heartbeat del v2 la reinicia sola y la derecha sigue funcionando.
 
